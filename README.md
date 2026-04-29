@@ -80,6 +80,9 @@ This system:
 
 👉 https://ai-app-compiler-g24h.onrender.com/
 
+## Loom Video
+https://drive.google.com/file/d/1JTcs_yrAU-EfIpxsDThkCrkg7_MABK0r/view?usp=sharing
+
 ---
 
 ## 🧪 Sample Input
