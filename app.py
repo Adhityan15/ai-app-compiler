@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
 import os
 
 from pipeline.intent import extract_intent
@@ -7,7 +8,6 @@ from pipeline.design import design_system
 from pipeline.schema import generate_schema
 from validator.validate import validate_schema
 from validator.repair import repair_schema
-
 from pipeline.refine import refine_schema
 from pipeline.executor import simulate_execution
 
@@ -18,17 +18,25 @@ total_requests = 0
 successful_requests = 0
 
 
+# 🔹 Request Model (IMPORTANT FIX)
+class InputData(BaseModel):
+    user_input: str
+
+
 @app.get("/")
 def home():
     return {"message": "AI System Running 🚀"}
 
 
+# 🔹 FIXED ENDPOINT
 @app.post("/generate")
-def generate(user_input: str):
+def generate(data: InputData):
     global total_requests, successful_requests
 
     try:
         total_requests += 1
+
+        user_input = data.user_input
 
         # 🔹 Stage 1
         intent = extract_intent(user_input)
@@ -88,7 +96,7 @@ def generate(user_input: str):
         }
 
 
-# 🌐 Serve UI from separate file
+# 🌐 Serve UI
 @app.get("/app", response_class=HTMLResponse)
 def web_ui():
     try:

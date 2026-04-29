@@ -143,9 +143,15 @@ async function generate() {
 
     activateStep("step1");
 
-    const res = await fetch(`/generate?user_input=${encodeURIComponent(input)}`, {
-        method: "POST"
-    });
+    const res = await fetch("/generate", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        user_input: input
+    })
+})
 
     activateStep("step2");
 
