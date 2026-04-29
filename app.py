@@ -18,17 +18,23 @@ total_requests = 0
 successful_requests = 0
 
 
-# 🔹 Request Model (IMPORTANT FIX)
+# 🔹 Request Model
 class InputData(BaseModel):
     user_input: str
 
 
-@app.get("/")
+# 🌐 SERVE UI AT ROOT (MAIN FIX)
+@app.get("/", response_class=HTMLResponse)
 def home():
-    return {"message": "AI System Running 🚀"}
+    try:
+        file_path = os.path.join(os.path.dirname(__file__), "ui.html")
+        with open(file_path, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        return f"<h2>UI Load Error</h2><p>{str(e)}</p>"
 
 
-# 🔹 FIXED ENDPOINT
+# 🔹 GENERATE PIPELINE
 @app.post("/generate")
 def generate(data: InputData):
     global total_requests, successful_requests
@@ -38,13 +44,13 @@ def generate(data: InputData):
 
         user_input = data.user_input
 
-        # 🔹 Stage 1
+        # 🔹 Stage 1: Intent
         intent = extract_intent(user_input)
 
-        # 🔹 Stage 2
+        # 🔹 Stage 2: Design
         design = design_system(intent)
 
-        # 🔹 Stage 3
+        # 🔹 Stage 3: Schema
         schema = generate_schema(design)
 
         # 🔒 Safety check
@@ -54,16 +60,16 @@ def generate(data: InputData):
                 "details": schema
             }
 
-        # 🔹 Stage 4: refine + simulate execution
+        # 🔹 Stage 4: Refine + Execute
         schema = refine_schema(schema)
         execution = simulate_execution(schema)
 
-        # 🔹 Stage 5: validation
+        # 🔹 Stage 5: Validation
         errors = validate_schema(schema)
         if not isinstance(errors, list):
             errors = []
 
-        # 🔹 Stage 6: repair
+        # 🔹 Stage 6: Repair
         if errors:
             schema = repair_schema(schema, errors)
 
@@ -96,7 +102,7 @@ def generate(data: InputData):
         }
 
 
-# 🌐 Serve UI
+# 🌐 OPTIONAL BACKUP ROUTE
 @app.get("/app", response_class=HTMLResponse)
 def web_ui():
     try:
